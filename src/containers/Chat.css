@@ -1,0 +1,48 @@
+.messageList {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 12px;
+    border: 1px solid black;
+    list-style: none;
+}
+
+.messageList__item {
+    margin-top: 20px;
+}
+
+.messageList__item:first-child {
+    margin-top: 0;
+}
+
+.messageControls {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center
+}
+
+.messageControls__label {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    width: 100%;
+    max-width: 200px
+}
+
+.messageControls__label:first-child {
+    font-size: 16px;
+    margin-left: 0;
+}
+
+.ui.form .messageControls__text-field--area  {
+    resize: none;
+}
+
+.messageControls__btn {
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid black;
+    background: transparent;
+    cursor: pointer;
+}

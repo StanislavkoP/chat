@@ -1,0 +1,3 @@
+export {
+    onRegistration
+} from './auth'
