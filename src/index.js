@@ -5,7 +5,9 @@ import {composeWithDevTools} from 'redux-devtools-extension';
 import thunk from 'redux-thunk'; 
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
+import jwt_decode from 'jwt-decode';
 
+import * as actions from './state/action/index';
 import authReducer from './state/reducer/auth';
 
 import App from './App';
@@ -14,7 +16,7 @@ import './index.css';
 
 const rootReducer = authReducer;
 
-const configurateStore = (initialState = {}) => {
+const configurateStore = () => {
     const middlewares = [
         thunk
     ];
@@ -25,17 +27,27 @@ const configurateStore = (initialState = {}) => {
 
     const store = createStore(
         rootReducer,
-        initialState,
+        undefined,
         composeWithDevTools(...enchansers)
     );
 
     return store;
 }
 
-const store = configurateStore({});
+const store = configurateStore();
 
-console.log(store.getState());
+if (localStorage.jwtToken) {
+    const decodedJwtToken = jwt_decode(localStorage.jwtToken);
 
+    const currentTime = Date.now / 1000;
+
+    if (decodedJwtToken.exp < currentTime) {
+        store.dispatch( actions.clearCurrentProfile() )
+    
+    } else {
+        store.dispatch( actions.onLogInSuccess(decodedJwtToken) )
+    }
+}
 
 ReactDOM.render(
     <Provider store={store}>

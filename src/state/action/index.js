@@ -1,3 +1,6 @@
 export {
-    onRegistration
+    onRegistration,
+    onLogIn,
+    onLogInSuccess,
+    clearCurrentProfile,
 } from './auth'
