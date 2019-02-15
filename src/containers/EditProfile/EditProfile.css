@@ -1,0 +1,11 @@
+.ui.button.profile__button {
+    margin-top: 20px;
+}
+
+.edit-profile__avatar {
+    max-width: 150px;
+}
+
+.edit-profile__avatar img{
+    max-width: 150px;
+}

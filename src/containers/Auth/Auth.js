@@ -28,9 +28,8 @@ class Auth extends React.Component {
     }
 
     static getDerivedStateFromProps (props, state) {
-        if(!state.errors) {
+        if( Object.keys(state.errors).length === 0) {
             return {
-                ...state,
                 errors: props.errors
             }
         } else {
@@ -41,7 +40,8 @@ class Auth extends React.Component {
     onSwitchAuth () {
         this.setState((prevState) => {
             return {
-                registration: !prevState.registration
+                registration: !prevState.registration,
+                errors: {}
             }
         })
     }
@@ -78,16 +78,16 @@ class Auth extends React.Component {
             this.props.onRegistration(userDataForRegistration);
 
         } else {
-
             this.props.onLogIn(userDataForLogIn, this.props.history)
+
         }
         
         
     }
     
     render () {
-        const { registration } = this.state;
-        const { isAuth, errors } = this.props;
+        const { registration, errors } = this.state;
+        const { isAuth } = this.props;
 
         if (isAuth) {
             return (
@@ -111,7 +111,8 @@ class Auth extends React.Component {
                                 value={ this.state.controls.userName }
                                 label="Name" 
                                 name="userName" 
-                                placeholder="Name"  
+                                placeholder="Name"
+                                inputWithError={true} 
                                 error={errors} 
                                 nameErrorField='name' 
                                 onChangeInput={ this.onChangeInput }
@@ -124,7 +125,8 @@ class Auth extends React.Component {
                             value={ this.state.controls.userEmail }
                             label="Email" 
                             name="userEmail" 
-                            placeholder="Email" 
+                            placeholder="Email"
+                            inputWithError={true}
                             error={errors} 
                             nameErrorField='email' 
                             onChangeInput={ this.onChangeInput } 
@@ -135,7 +137,8 @@ class Auth extends React.Component {
                             value={ this.state.controls.userPassword }
                             label="Password" 
                             name="userPassword" 
-                            placeholder="Password" 
+                            placeholder="Password"
+                            inputWithError={true}
                             error={errors} 
                             nameErrorField='password' 
                             onChangeInput={ this.onChangeInput }
@@ -162,9 +165,9 @@ class Auth extends React.Component {
 };
 
 const mapStateToProps = (state) => ({
-    isAuth: state.isAuth,
-    loading: state.loading,
-    errors: state.errors,
+    isAuth: state.authReducer.isAuth,
+    loading: state.authReducer.loading,
+    errors: state.authReducer.errors,
 });
 
 const mapDispatchToProps = (dispatch) => ({

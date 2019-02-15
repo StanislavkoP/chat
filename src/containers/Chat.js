@@ -1,12 +1,16 @@
-import './Chat.css';
-
 import React from 'react';
-import { createMessageItemUI } from '../utils';
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import openSocket from 'socket.io-client';
-const socket = openSocket.connect('http://2642c350.ngrok.io');
 
+import settings from '../defaultSettigs';
 
+import * as actions from '../state/action/index';
+
+import MessageList from '../components/Chat/MassageList/MessageList';
+import OnlineUserList from '../components/Chat/OnlineUserList/OnlineUserList';
+
+import './Chat.css';
 
 class Chat extends React.Component {
 
@@ -15,64 +19,126 @@ class Chat extends React.Component {
 
         this.state = {
             userMessage : '',
-            userName : '',
+            onlineUsers: [],
+            anotherUser: {
+                userName: '',
+                isTypingMessage: false,
+            }
         }
-        this.messageListRef = React.createRef();
-        this.refTyping = React.createRef();
 
         this.sendMessage = this.sendMessage.bind(this);
         this.onChangeInput = this.onChangeInput.bind(this);
         this.userIsTyping = this.userIsTyping.bind(this);
     }
 
-    static getDerivedStateFromProps (props, state) {
-        if (state.userName === '') {
-            return {
-                ...state,
-                userName: props.user.name
-            } 
-        } else {
-            return null
-        }
+    static propTypes = {
+        user : PropTypes.object,
+        messageListRef: PropTypes.array,
+
+        getLastMessages: PropTypes.func,
+        addNewMessage: PropTypes.func
     }
 
     componentDidMount () {
+        this.socket = openSocket.connect(settings.serverURI);
 
-        socket.on('message', (data) => {
-            console.log('message', data)
-            this.refTyping.current.innerHTML = ``
-            const messsageItem = createMessageItemUI(data);
+        this.socket.on('connect', () => {
+            this.props.getLastMessages();
             
-            this.messageListRef.current.appendChild(messsageItem);
+            const logginedUser = {
+                id: this.props.user.id,
+                name: this.props.user.name,
+                avatar: this.props.user.avatar
+
+            }
+
+            this.socket.emit('logInNewUser', logginedUser);
+
         });
 
-        socket.on('typing', (data) => {
+        this.socket.on('onlineUsers', onlineUsers => {
+            this.setState({onlineUsers})
+        
+        });
 
-            const userNameWhoIsTyping = data;
-            this.refTyping.current.innerHTML = `${userNameWhoIsTyping} is typing`
 
-            setTimeout(()=> {
-                this.refTyping.current.innerHTML = ``
-            }, 1500)
-        })
+
+        this.socket.on('message', (message) => {
+            console.log(message);
+            this.props.addNewMessage(message);
+
+            if (this.messageListRef) {
+                this.messageListRef.scrollTop = this.messageListRef.scrollHeight;
+    
+            }
+
+        });
+
+        this.socket.on('typing', (nameWhoIsTyping) => {
+            this.setState({
+                anotherUser: {
+                    name: nameWhoIsTyping,
+                    isTypingMessage: true,
+                }
+            });
+
+            const userIsTypingMessageNow = this.state.anotherUser.isTypingMessage
+            if (userIsTypingMessageNow) {
+                return
+
+            } else {
+                setTimeout(()=> {
+                    this.setState({
+                        anotherUser: {
+                            name: '',
+                            isTypingMessage: false,
+                        }
+                    });
+                }, 2000)
+            
+            }
+
+        });
+
+        if (this.props.messages.length > 0) {
+                this.messageListRef.scrollTop = this.messageListRef.scrollHeight;
+        }
+
+    }
+
+    componentDidUpdate (prevProps, prevState) {
+        const isContainMessageList = this.props.messages.length > 0;
+        const isContainNewMessages = prevProps.messages.length !== this.props.messages.length;
+
+        if (this.messageListRef && isContainMessageList && isContainNewMessages ) {
+            this.messageListRef.scrollTop = this.messageListRef.scrollHeight;
+
+        }
     }
 
     componentWillUnmount () {
-        socket.off('message')
+        console.log('unmount');
+/*         this.socket.off('message')
+        this.socket.disconnect(s => {
+            console.log(s);
+        }) */
     }
 
     sendMessage (e) {
         e.preventDefault();
         
         const newMessage = {
-            author : this.state.userName,
+            authorId: this.props.user.id,
+            author : this.props.user.name,
             text: this.state.userMessage,
-            createTime: new Date(),
-        }
-        socket.emit('message', newMessage);
+            avatar: this.props.user.avatar,
+        };
 
-        this.setState({userMessage: ''})
+        console.log(newMessage);
+
+        this.socket.emit('message', newMessage);
         
+        this.setState({userMessage: ''})
     }
 
     onChangeInput (e) {
@@ -80,60 +146,92 @@ class Chat extends React.Component {
         const inputValue = e.target.value;
 
         this.setState({[inputName]: inputValue});
-    
+
     }
 
     userIsTyping (e) {
-        socket.emit('typing', this.state.userName);
+        this.socket.emit('typing', this.props.user.name);
     }
 
     render () {
 
-        const { userName, userMessage } = this.state;
-        return (
-            <div className="container">
-                <h1 style={{textAlign: 'center'}}>Chat</h1>
-                <div className="ui comments messageList" ref={this.messageListRef}> 
-                </div>
-                <div ref={this.refTyping}></div>
+        const { userMessage, onlineUsers, anotherUser } = this.state;
+        const { user, messages } = this.props;
 
-                <form className="messageControls form ui">
-                    <div className="field">
-                        <label>Name:</label>
-                        <input  type="text" 
-                            name="userName" 
-                            value={userName}
-                            onChange={this.onChangeInput} placeholder="First Name" 
+        let countOnlineUsers = 0;
+        if (this.state.onlineUsers.length > 0) {
+            countOnlineUsers = this.state.onlineUsers.length - 1;
+        
+        }
+        
+        return (
+            <div className="ui container messanger">
+                <div className="ui two column centered grid">
+                    <div className="column">
+                        <h2 style={{textAlign: 'center'}}>Chat</h2>
+
+                        <div className="messageList-container">
+                            
+                            <MessageList
+                                messageListRef={ el => this.messageListRef = el }
+                                messages={ messages }
+                                idCurrentUser={ user.id }
+                            />
+
+
+                            <div className="messageList-container__typing">
+                                {
+                                    anotherUser.isTypingMessage
+                                    ? <span>{ this.state.anotherUser.name } is typing`</span>
+                                    : null
+                                }
+                            </div>
+
+
+                            <form className="messageControls form ui">
+                                <div className="field">
+                                    <label>Text message:</label>
+                                    <textarea
+                                        className="messageControls__text-field messageControls__text-field--area"
+                                        type="text" 
+                                        name="userMessage" 
+                                        value={userMessage}
+                                        onKeyPress= { this.userIsTyping }
+                                        placeholder="Message"
+                                        onChange={this.onChangeInput}
+                                    ></textarea>
+                                </div>
+
+                                <button className="ui button primary messageControls__btn" type="sent" onClick={this.sendMessage} >Send</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div className="column">
+                        <h2 style={{textAlign: 'center'}}>
+                            {countOnlineUsers} online { countOnlineUsers.length === 1 ? 'user' : 'users'}
+                        </h2>
+                        
+                        <OnlineUserList
+                            onlineUsers={ onlineUsers }
+                            idCurrentUser={ user.id }
                         />
                     </div>
-
-                    <div className="field">
-                        <label>Text message:</label>
-                        <textarea
-                            className="messageControls__text-field messageControls__text-field--area"
-                            type="text" 
-                            name="userMessage" 
-                            value={userMessage}
-                            onKeyPress= { this.userIsTyping }
-                            placeholder="Message"
-                            onChange={this.onChangeInput}
-                        ></textarea>
-                    </div>
-
-                    <div>
-                        <button className="messageControls__btn" type="sent" onClick={this.sendMessage} >Send</button>
-                    </div>
-                </form>
+                </div>
             </div>
-
-            
         )
         
     }
 };
 
 const mapStateToProps = state => ({
-    user: state.user
+    user: state.authReducer.user,
+    messages: state.chatReducer.messages,
 });
 
-export default connect(mapStateToProps)(Chat)
+const mapDispatchToProps = dispatch => ({
+    getLastMessages: () => dispatch( actions.getLastMessages() ),
+    addNewMessage: (message) => dispatch( actions.addNewMessage(message) )
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Chat)

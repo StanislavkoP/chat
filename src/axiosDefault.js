@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+import settings from './defaultSettigs';
+
 const instance = axios.create({
-	baseURL : 'http://2642c350.ngrok.io/'
+	baseURL : settings.serverURI
 });
 
 export default instance;

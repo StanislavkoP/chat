@@ -1,11 +1,61 @@
-.ui.comments.messageList {
-    width: 100%;
+.messanger {
+    padding-top: 1px;
+    margin-top: 20px;
+}
+
+.messageList-container {
+    position: relative;
     max-width: 500px;
+    margin: 0 auto;
+}
+
+.ui.comments.messageList {
+    position: relative;
+    width: 100%;
     height: 250px;
     overflow-y: auto; 
-    margin: 0 auto;
+    margin-bottom: 20px;
     padding: 12px;
+    padding-top: 30px;
+    box-sizing: border-box;
     border: 1px solid black;
+}
+
+.messageList::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    height: 30px;
+}
+
+.messageList-container__typing {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: calc(100% - 30px);
+    color: black;
+    background-color: white;
+    text-align: center;
+    height: 30px;
+}
+
+.messageList .right {
+    display: flex;
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+.messageList .left {
+    display: flex;
+}
+
+
+.messageList .comment .content {
+    width: 50%;
 }
 
 .messageList__item {
@@ -25,7 +75,6 @@
 
 .messageControls .field {
     width: 100%;
-    max-width: 300px;
 }
 
 .messageControls__label {
@@ -47,6 +96,7 @@
 }
 
 .messageControls__btn {
+    width: 100%;
     margin-top: 10px;
     padding: 12px;
     border: 1px solid black;

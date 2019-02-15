@@ -1,7 +1,6 @@
 import * as actionTypes from './actionTypes';
 import axios from '../../axiosDefault';
 import jwt_decode from 'jwt-decode';
-import {decodeJwtToken} from '../../utils';
 
 const onRegistrationInit = () => ({
     type: actionTypes.ON_REGISTRATION_INIT
@@ -56,14 +55,15 @@ const onLogInInit = () => ({
 });
 
 export const onLogInSuccess = (decodedJwtToken) => {
-    const {_id, email, name} = decodedJwtToken.profile;
+    const {_id, email, name, avatar} = decodedJwtToken.profile;
 
     return {
         type: actionTypes.ON_LOG_IN_SUCCESS,
         user: {
-            _id,
+            id: _id,
+            name,
             email,
-            name
+            avatar,
         }
     }
 }
@@ -75,10 +75,11 @@ const onLogInFailed = (errors) => ({
 
 export const onLogIn = (userData, withRouter) => dispatch => {
     dispatch( onLogInInit() );
-    console.log('login')
+    
     axios
         .post('/authentication', userData)
         .then(response => {
+            console.log('login')
             const jwtToken = response.data.token;
             const decodedJwtToken = jwt_decode(jwtToken)
 
@@ -91,6 +92,7 @@ export const onLogIn = (userData, withRouter) => dispatch => {
         })
         .catch(err => {
             const response = err.response;
+            console.log(err)
             const errors = response.data.errors;
             
             dispatch( onLogInFailed(errors) )

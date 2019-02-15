@@ -1,0 +1,16 @@
+.profile__button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.profile__avatar {
+    max-width: 200px;
+}
+
+.profile__avatar img{
+    max-width: 100%;
+}
+
+.ui.primary.button.profile__button {
+    display: inline-block;
+}

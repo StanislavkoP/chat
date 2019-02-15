@@ -1,0 +1,15 @@
+.ui.comments .comment > .avatar ~ .content {
+    margin-left: 0 !important;
+}
+
+.messageList__item-avatar {
+    margin: 5px;
+    align-self: start;
+}
+
+.messageList__item.comment.left .messageList__item-avatar {
+    margin-right: 8px !important;
+}
+.messageList__item.comment.right .messageList__item-avatar {
+    margin-left: 8px !important;
+}

@@ -3,27 +3,34 @@ import React from 'react';
 import './GroupInputField.css'
 
 function GroupInputField (props) {
-    const {label, type, name, placeholder, error, nameErrorField, onChangeInput, userIsTyping} = props
+    const {
+        value, label, type, name, placeholder, inputWithError, error, nameErrorField, onChangeInput, userIsTyping} = props
     
-    const nameFieldWithError = error[nameErrorField];
+    let classError = '';
+    let hasFieldError = false;
+    let nameFieldWithError = null;
+
+    if( inputWithError ) {
+        nameFieldWithError = error[nameErrorField];
+        hasFieldError = nameFieldWithError ? true : false
+        classError = hasFieldError ? 'error': null;
     
-    const hasFieldError = nameFieldWithError ? true : false
-    const classError = hasFieldError ? 'error': null;
-
-
+    }
+    
     return (
         <div className={`field ${classError}`}>
             <label>{ label }</label>
             <input
                 type={ type } 
-                name={ name } 
+                name={ name }
+                value={value} 
                 placeholder={ placeholder }
                 onChange={ onChangeInput }
                 onKeyPress={ userIsTyping } 
             />
             {
-                hasFieldError
-                ? <span className="errorMessage">{ nameFieldWithError.message }</span>
+                hasFieldError && inputWithError
+                ? <span className="errorMessage">{ inputWithError ? nameFieldWithError.message : null }</span>
                 : null
             }
             
