@@ -50,6 +50,11 @@ class Auth extends React.Component {
     onSwitchAuth () {
         this.setState((prevState) => {
             return {
+                controls : {
+                    userName: '',
+                    userEmail: '',
+                    userPassword: '',
+                },
                 registration: !prevState.registration,
                 errors: {}
             }
