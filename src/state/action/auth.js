@@ -79,7 +79,6 @@ export const onLogIn = (userData, withRouter) => dispatch => {
     axios
         .post('/authentication', userData)
         .then(response => {
-            console.log('login')
             const jwtToken = response.data.token;
             const decodedJwtToken = jwt_decode(jwtToken)
 
@@ -91,8 +90,8 @@ export const onLogIn = (userData, withRouter) => dispatch => {
 
         })
         .catch(err => {
-            const response = err.response;
             console.log(err)
+            const response = err.response;
             const errors = response.data.errors;
             
             dispatch( onLogInFailed(errors) )
