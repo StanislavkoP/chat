@@ -31,11 +31,10 @@ export class Profile extends Component {
         }
 
         return (
-            <div className="profile">
-                <div className="ui container">
-                    <h1 style={{textAlign: 'center', marginTop: '20px'}} >Your profile</h1>
-                    
-                    <div className="ui five column centered grid">
+            <div className="ui container profile--wrap">
+                <h1 style={{textAlign: 'center', marginTop: '20px'}} >Your profile</h1>
+                <div className="profile">
+                    <div className="ui four column centered grid">
                         <div className="column">
                             <div className="profile__avatar">
                                 {
