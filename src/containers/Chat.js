@@ -18,17 +18,9 @@ class Chat extends React.Component {
     constructor(props) {
         super(props)
 
-        let a1 = function(){
-            console.log('typingStart from front')
-            socket.emit('typingStart')
-        };
-        this.debounce1 = debounce(a1, 100, { 'maxWait': 1000 });
+        this.startTyping = debounce((name) => socket.emit('typingStart', name), 100, { 'maxWait': 1000 });
 
-        let a2 = function(){
-            console.log('typingEnd from front')
-            socket.emit('typingEnd')
-        };
-        this.debounce2 = debounce(a2, 2000, { 'maxWait': 5000 });
+        this.endTyping = debounce(() => socket.emit('typingEnd'), 2000, { 'maxWait': 5000 });
 
         this.state = {
             userMessage : '',
@@ -79,7 +71,6 @@ class Chat extends React.Component {
         });
 
         socket.on('typingEnd', () => {
-            console.log('typingEnd from server');
 
             this.setState(prevState => {
                 return {
@@ -94,8 +85,6 @@ class Chat extends React.Component {
         })
 
         socket.on('typingStart', (nameWhoIsTyping) => {
-            console.log('typingStart from server');
-
             this.setState(prevState => {
                 return {
                     ...prevState,
@@ -144,8 +133,8 @@ class Chat extends React.Component {
         const inputName = e.target.name;
         const inputValue = e.target.value;
         this.setState({[inputName]: inputValue});
-        this.debounce1();
-        this.debounce2();
+        this.startTyping(this.props.user.name);
+        this.endTyping();
     }
 
     render () {
@@ -179,7 +168,7 @@ class Chat extends React.Component {
                                 <div className="messageList-container__typing">
                                     {
                                         anotherUser.isTypingMessage
-                                        ? <span>{ this.state.anotherUser.name } is typing`</span>
+                                        ? <span>{ this.state.anotherUser.userName } is typing</span>
                                         : null
                                     }
                                 </div>
