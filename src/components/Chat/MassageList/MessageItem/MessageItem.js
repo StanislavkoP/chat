@@ -9,8 +9,9 @@ MessageItem.propTypes = {
     authorName: PropTypes.string,
     text: PropTypes.string,
     userAvatar: PropTypes.string,
-    idAuthorMessage: PropTypes.number,
-    idCurrentUser: PropTypes.number,
+    idAuthorMessage: PropTypes.string,
+    idCurrentUser: PropTypes.string,
+
 }
 
 function MessageItem (props) {
@@ -19,7 +20,7 @@ function MessageItem (props) {
         text,
         userAvatar,
         idAuthorMessage,
-        idCurrentUser
+        idCurrentUser,
 
     } = props;
 
@@ -39,11 +40,11 @@ function MessageItem (props) {
 
     return (
         <div className={ `messageList__item comment ${classForMessage}` }>
-            <a className="messageList__item-avatar avatar">
-                <img src={ avatar } />
-            </a>
+            <div className="messageList__item-avatar avatar">
+                <img src={ avatar } alt={ authorName } />
+            </div>
             <div className="content">
-                <a className="author">{ authorName }</a>
+                <span className="author">{ authorName }</span>
                 <div className="text">
                     { text }
                 </div>

@@ -6,7 +6,7 @@ import MessageItem from './MessageItem/MessageItem';
 MessageList.propTypes = {
     messageList: PropTypes.func,
     messages: PropTypes.array,
-    idCurrentUser: PropTypes.number,
+    idCurrentUser: PropTypes.string,
 
 }
 

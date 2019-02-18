@@ -5,7 +5,7 @@ import OnlineUserItem from './OnlineUserItem/OnlineUserItem';
 
 OnlineUserList.propTypes = {
     onlineUsers: PropTypes.array,
-    idCurrentUser: PropTypes.number,
+    idCurrentUser: PropTypes.string,
 }
 
 function OnlineUserList (props) {
