@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {withRouter, Redirect} from 'react-router-dom';
 import * as actions from '../../state/action/index'
@@ -25,6 +26,15 @@ class Auth extends React.Component {
         this.onSwitchAuth = this.onSwitchAuth.bind(this);
         this.onChangeInput = this.onChangeInput.bind(this);
         this.onSubmitForm = this.onSubmitForm.bind(this);
+    }
+
+    static propTypes = {
+        isAuth: PropTypes.bool,
+        loading: PropTypes.bool,
+        errors: PropTypes.object,
+
+        onRegistration: PropTypes.func,
+        onLogIn: PropTypes.func,
     }
 
     static getDerivedStateFromProps (props, state) {

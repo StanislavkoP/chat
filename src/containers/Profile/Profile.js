@@ -11,6 +11,11 @@ import './Profile.css'
 
 export class Profile extends Component {
 
+    static propTypes = {
+        userData: PropTypes.object,
+
+        getDataCurrentProfile: PropTypes.func,
+    }
 
     componentDidMount () {
         this.props.getDataCurrentProfile()
