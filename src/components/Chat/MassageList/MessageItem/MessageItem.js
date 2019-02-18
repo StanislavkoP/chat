@@ -1,10 +1,19 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import settings from '../../../../defaultSettigs';
 
 import './MessageItem.css';
 
-function MessageListItem (props) {
+MessageItem.propTypes = {
+    authorName: PropTypes.string,
+    text: PropTypes.string,
+    userAvatar: PropTypes.string,
+    idAuthorMessage: PropTypes.number,
+    idCurrentUser: PropTypes.number,
+}
+
+function MessageItem (props) {
     const {
         authorName,
         text,
@@ -43,4 +52,4 @@ function MessageListItem (props) {
     )
 };
 
-export default MessageListItem
+export default MessageItem;

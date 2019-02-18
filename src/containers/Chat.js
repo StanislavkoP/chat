@@ -33,7 +33,7 @@ class Chat extends React.Component {
 
     static propTypes = {
         user : PropTypes.object,
-        messageListRef: PropTypes.array,
+        messages: PropTypes.array,
 
         getLastMessages: PropTypes.func,
         addNewMessage: PropTypes.func

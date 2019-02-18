@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux'
 
 import settings from '../../defaultSettigs';
@@ -24,6 +24,14 @@ export class EditProfile extends Component {
 
         this.onChangeInput = this.onChangeInput.bind(this);
         this.onSubmitForm = this.onSubmitForm.bind(this);
+    }
+
+    static propTypes = {
+        userData : PropTypes.object,
+        
+        updateDataCurrentProfile: PropTypes.func,
+        updateDataCurrentProfile: PropTypes.func,
+
     }
 
     static getDerivedStateFromProps (props, state) {

@@ -1,13 +1,20 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import Header from '../components/Header/header';
 
+Layout.propTypes = {
+    isAuth: PropTypes.bool,
 
+}
 
 function Layout (props) {
-    const {isAuth} = props;
+    const {
+        isAuth
+    
+    } = props;
 
     return (
         <React.Fragment>

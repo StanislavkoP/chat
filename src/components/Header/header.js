@@ -1,8 +1,14 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import './header.css';
 
 import Navigation from './Navigation/Navigation';
+
+Header.propTypes = {
+    isAuth: PropTypes.bool,
+
+}
 
 function Header (props) {
     const { isAuth } = props;

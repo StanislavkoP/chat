@@ -1,10 +1,33 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-import './GroupInputField.css'
+import './GroupInputField.css';
+
+GroupInputField.propTypes = {
+    value: PropTypes.string,
+    label: PropTypes.string,
+    name: PropTypes.string,
+    placeholder: PropTypes.string,
+    error: PropTypes.string,
+    nameErrorField: PropTypes.string,
+    inputWithError: PropTypes.bool,
+
+    onChangeInput: PropTypes.func,
+}
 
 function GroupInputField (props) {
     const {
-        value, label, type, name, placeholder, inputWithError, error, nameErrorField, onChangeInput, userIsTyping} = props
+        value,
+        label,
+        type,
+        name,
+        placeholder,
+        error,
+        nameErrorField,
+        inputWithError,
+        onChangeInput, userIsTyping
+    
+    } = props
     
     let classError = '';
     let hasFieldError = false;

@@ -10,6 +10,11 @@ export class LogOut extends Component {
         onLogOut: PropTypes.func
     }
 
+    static propTypes = {
+        onLogOut: PropTypes.func,
+
+    }
+
     componentDidMount () {
         localStorage.removeItem('jwtToken');
         this.props.onLogOut();
@@ -26,12 +31,8 @@ export class LogOut extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-  
-})
-
 const mapDispatchToProps = dispatch => ({
-  onLogOut: () => dispatch( actions.clearCurrentProfile() ),
+    onLogOut: () => dispatch( actions.clearCurrentProfile() ),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(LogOut))
+export default connect(null, mapDispatchToProps)(withRouter(LogOut))

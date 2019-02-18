@@ -1,6 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import OnlineUserItem from './OnlineUserItem/OnlineUserItem';
+
+OnlineUserList.propTypes = {
+    onlineUsers: PropTypes.array,
+    idCurrentUser: PropTypes.number,
+}
 
 function OnlineUserList (props) {
     const {

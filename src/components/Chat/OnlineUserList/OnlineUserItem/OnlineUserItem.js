@@ -1,6 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-import settings from '../../../../defaultSettigs'
+import settings from '../../../../defaultSettigs';
+
+OnlineUserItem.propTypes = {
+    userName: PropTypes.string,
+    userAvatar: PropTypes.string,
+}
 
 function OnlineUserItem (props) {
     const {

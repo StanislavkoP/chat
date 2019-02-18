@@ -1,6 +1,14 @@
-import React from 'react'
+import React from 'react';
+import PropTypes from 'prop-types';
 
 import MessageItem from './MessageItem/MessageItem';
+
+MessageList.propTypes = {
+    messageList: PropTypes.func,
+    messages: PropTypes.array,
+    idCurrentUser: PropTypes.number,
+
+}
 
 function MessageList (props) {
     const {

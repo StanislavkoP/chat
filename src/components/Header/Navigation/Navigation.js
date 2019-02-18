@@ -1,8 +1,15 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import './Navigation.css';
 
 import NavItem from './NavItem/NavItem';
+
+Navigation.propTypes = {
+    isAuth: PropTypes.bool,
+
+}
+
 
 function Navigation (props) {
     const { isAuth } = props;
