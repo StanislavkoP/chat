@@ -5,23 +5,27 @@ import { connect } from 'react-redux';
 
 PrivateRoute.propTypes = {
 	isAuth: PropTypes.bool,
-	component: PropTypes.element,
+	Component: PropTypes.element,
 }
 
-const PrivateRoute = ({component: Component, isAuth, ...rest}) => (
-	<Route 
-		{...rest}
-		
-		render = { props => 
-            isAuth === true
-			?
-				( <Component {...props}/> )
-			:
-                ( <Redirect to="/auth"/> )
-            
-		}
-/>
-);
+function PrivateRoute ({component: Component, isAuth, ...rest}) {
+	
+	return (
+		<Route 
+			{...rest}
+			
+			render = { props => 
+				isAuth === true
+				?
+					( <Component {...props}/> )
+				:
+					( <Redirect to="/auth"/> )
+				
+			}
+		/>
+	)
+
+};
 
 const mapStateToProps = state => ({
     isAuth: state.authReducer.isAuth
