@@ -29,7 +29,7 @@ export class EditProfile extends Component {
     static propTypes = {
         userData : PropTypes.object,
         
-        updateDataCurrentProfile: PropTypes.func,
+        getDataCurrentProfile: PropTypes.func,
         updateDataCurrentProfile: PropTypes.func,
 
     }
