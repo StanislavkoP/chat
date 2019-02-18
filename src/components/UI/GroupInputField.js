@@ -8,7 +8,7 @@ GroupInputField.propTypes = {
     label: PropTypes.string,
     name: PropTypes.string,
     placeholder: PropTypes.string,
-    error: PropTypes.string,
+    error: PropTypes.object,
     nameErrorField: PropTypes.string,
     inputWithError: PropTypes.bool,
 
@@ -46,7 +46,7 @@ function GroupInputField (props) {
             <input
                 type={ type } 
                 name={ name }
-                value={value} 
+                value={ value } 
                 placeholder={ placeholder }
                 onChange={ onChangeInput }
                 onKeyPress={ userIsTyping } 
