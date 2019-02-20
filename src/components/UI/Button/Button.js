@@ -10,14 +10,20 @@ Button.propTypes = {
 }
 
 function Button (props) {
-    const { className, type, disabled, clicked } = props;
+    const { 
+        className,
+        type,
+        disabled,
+        clicked 
+    
+    } = props;
 
     return (
         <button 
-        className={ `ui button ${ className }` } 
-        type={ type }
-        disabled={ disabled }
-        onClick={ clicked }
+            className={ `ui button ${ className }` } 
+            type={ type }
+            disabled={ disabled }
+            onClick={ clicked }
         > 
             { props.children } 
         </button>
