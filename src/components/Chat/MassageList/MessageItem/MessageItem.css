@@ -7,6 +7,10 @@
     align-self: start;
 }
 
+.messageList__item .text {
+    margin-top: 12px !important;
+}
+
 .messageList__item.comment.left .messageList__item-avatar {
     margin-right: 8px !important;
 }
