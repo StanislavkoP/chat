@@ -1,9 +1,11 @@
 .auth {
+    max-width: 500px;
     color: white ;
-    margin-top: 50px;
-    background-color: rgba(0,0,0,0.3);
     padding: 20px;
+    margin: 0 auto;
+    margin-top: 50px;
     border-radius: 18px;
+    background-color: rgba(0,0,0,0.3);
 }
 
 .auth .ui.form .field > label {
