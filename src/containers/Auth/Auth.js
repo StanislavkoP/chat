@@ -7,7 +7,7 @@ import * as actions from '../../state/action/index'
 import './Auth.css'
 
 import GroupInputField from '../../components/UI/GroupInputField';
-
+import Button from '../../components/UI/Button/Button';
 class Auth extends React.Component {
 
     constructor(props) {
@@ -19,7 +19,8 @@ class Auth extends React.Component {
                 userEmail: '',
                 userPassword: '',
             },
-            registration: false,
+            registrationSwitcher: false,
+            registrationSuccess: false,
             errors: {},
         }
 
@@ -37,14 +38,16 @@ class Auth extends React.Component {
         onLogIn: PropTypes.func,
     }
 
-    static getDerivedStateFromProps (props, state) {
-        if( Object.keys(state.errors).length === 0) {
+    static getDerivedStateFromProps (prevProps, prevState) {
+        if ( Object.keys(prevState.errors).length === 0 && Object.keys(prevProps.errors).length > 0) {
             return {
-                errors: props.errors
+                ...prevState,
+                errors: prevProps.errors
             }
-        } else {
-            return null
         }
+
+        return null
+        
     }
 
     onSwitchAuth () {
@@ -55,7 +58,7 @@ class Auth extends React.Component {
                     userEmail: '',
                     userPassword: '',
                 },
-                registration: !prevState.registration,
+                registrationSwitcher: !prevState.registrationSwitcher,
                 errors: {}
             }
         })
@@ -89,9 +92,18 @@ class Auth extends React.Component {
             password: userPassword,
         }
 
-        if (this.state.registration) {
-            this.props.onRegistration(userDataForRegistration);
-
+        if (this.state.registrationSwitcher) {
+            this.props.onRegistration(userDataForRegistration)
+                .then(() => {
+                    this.setState((prevState) => {
+                        return {
+                            ...prevState,
+                            registrationSuccess: true,
+                            registrationSwitcher: false,
+                        }
+                    })
+                })
+            
         } else {
             this.props.onLogIn(userDataForLogIn, this.props.history)
 
@@ -101,8 +113,8 @@ class Auth extends React.Component {
     }
     
     render () {
-        const { registration, errors } = this.state;
-        const { isAuth } = this.props;
+        const { registrationSwitcher, registrationSuccess, errors } = this.state;
+        const { isAuth, loading } = this.props;
 
         if (isAuth) {
             return (
@@ -115,12 +127,12 @@ class Auth extends React.Component {
                 <div className="auth">
                     <h1>
                         {
-                            registration ? 'Registration' : 'Log In'
+                            registrationSwitcher ? 'Registration' : 'Log In'
                         }
                     </h1>
                     <form className="ui form">
                         {
-                            registration 
+                            registrationSwitcher 
                             ? <GroupInputField 
                                 type="text"
                                 value={ this.state.controls.userName }
@@ -159,18 +171,31 @@ class Auth extends React.Component {
                             onChangeInput={ this.onChangeInput }
                         />
 
-                        <button className="ui button primary" type="submit" onClick={this.onSubmitForm}>Submit</button>
-                        <button 
-                            className="ui button green" 
-                            type="button"
-                            onClick={ this.onSwitchAuth }
+                        <Button
+                            className={ `primary ${ loading ? 'loading' : '' }` }
+                            type="submit" 
+                            disabled={ loading } 
+                            clicked={ this.onSubmitForm }
                         >
-                            {
-                                !registration ? 'Registration' : 'Log In'
+                            Submit
+                        </Button>
+
+                        <Button
+                            className="green"
+                            type="button" 
+                            disabled={ loading } 
+                            clicked={ this.onSwitchAuth }
+                        >
+                            { 
+                                !registrationSwitcher ? 'Registration' : 'Log In' 
                             }
-                        </button>
+                        </Button>
 
                     </form>
+
+                    {
+                        registrationSuccess ? 'Registration success' : null
+                    }
                 </div>
             </div>
 
@@ -183,6 +208,7 @@ const mapStateToProps = (state) => ({
     isAuth: state.authReducer.isAuth,
     loading: state.authReducer.loading,
     errors: state.authReducer.errors,
+    registrationSuccess: state.authReducer.registrationSuccess,
 });
 
 const mapDispatchToProps = (dispatch) => ({
