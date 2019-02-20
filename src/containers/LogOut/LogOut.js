@@ -17,7 +17,12 @@ export class LogOut extends Component {
     }
 
     componentDidMount () {
-        socket.emit('userDisconnected', this.props.user.id);
+
+        if (socket) {
+            socket.emit('userDisconnected', this.props.user.id);
+        }
+        
+        
 
         localStorage.removeItem('jwtToken');
         this.props.onLogOut();
