@@ -17,6 +17,7 @@ const onRegistrationInit = (state, action) => ({
 const onRegistrationSuccess = (state, action) => ({
     ...state,
     loading: false,
+    errors: {}
 })
 
 const onRegistrationFailed = (state, action) => ({

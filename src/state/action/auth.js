@@ -17,11 +17,11 @@ const onRegistrationFailed = (errors) => ({
 
 export const onRegistration = (userData) => dispatch => {
     dispatch( onRegistrationInit() );
-    console.log(userData)
-    axios
+    
+    return axios
         .post('/registration', userData)
         .then(data => {
-            //TODO: check this late
+            
             if(!data) {
                 return
             }
@@ -31,7 +31,9 @@ export const onRegistration = (userData) => dispatch => {
             if(isRegistered) {
                 console.log('Registered success');
                 dispatch( onRegistrationSuccess() );
+                
             }
+
         })
         .catch(err => {
             const response = err.response;
@@ -91,12 +93,22 @@ export const onLogIn = (userData, withRouter) => dispatch => {
         })
         .catch(err => {
             console.log(err)
-            const response = err.response;
-            const errors = response.data.errors;
+            let errors;
             
-            dispatch( onLogInFailed(errors) )
+            
+            if (err.response) {
+                const response = err.response;
 
-            console.log(response);
+                errors = response.data.errors;
+            
+            } else {
+                errors = {
+                    ErrorNetwork: true
+                }
+            
+            }
+
+            dispatch( onLogInFailed(errors) )
         })
 };
 
