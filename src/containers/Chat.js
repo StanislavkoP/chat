@@ -7,12 +7,13 @@ import settings from '../defaultSettigs';
 
 import * as actions from '../state/action/index';
 
-import MessageList from '../components/Chat/MassageList/MessageList';
+import Headline from '../components/UI/Headline/Headline';
+import Messanger from '../components/Chat/MessageContainer/MessageContainer';
 import OnlineUserList from '../components/Chat/OnlineUserList/OnlineUserList';
 
 import './Chat.css';
 
-export const socket = openSocket.connect(settings.serverURI);
+export let socket;
 class Chat extends React.Component {
 
     constructor(props) {
@@ -44,63 +45,75 @@ class Chat extends React.Component {
     }
 
     componentDidMount () {
+        socket = openSocket.connect(settings.serverURI);
+
         const logginedUser = {
             id: this.props.user.id,
             name: this.props.user.name,
-            avatar: this.props.user.avatar
-
+            avatar: this.props.user.avatar,
         }
+
         socket.emit('logInNewUser', logginedUser);
+        
+        socket.on('connect' , () => {
+            
+            socket.on('onlineUsers', onlineUsers => {
+                this.setState({onlineUsers})
+            
+            });
+    
+            socket.on('message', (message) => {
+                this.props.addNewMessage(message);
+    
+                if (this.messageListRef) {
+                    this.messageListRef.scrollTop = this.messageListRef.scrollHeight;
+        
+                }
+    
+            });
+    
+            socket.on('typingEnd', () => {
+    
+                this.setState(prevState => {
+                    return {
+                        ...prevState,
+                        anotherUser: {
+                            userName: '',
+                            isTypingMessage: false,
+                        }
+                    }
+                });
+    
+            })
+    
+            socket.on('typingStart', (nameWhoIsTyping) => {
+                this.setState(prevState => {
+                    return {
+                        ...prevState,
+                        anotherUser: {
+                            userName: nameWhoIsTyping,
+                            isTypingMessage: true,
+                        }
+                    }
+                });
+    
+            });
+        })
+        
 
         this.props.getLastMessages();
             
 
-        socket.on('onlineUsers', onlineUsers => {
-            this.setState({onlineUsers})
-        
-        });
 
-        socket.on('message', (message) => {
-            this.props.addNewMessage(message);
-
-            if (this.messageListRef) {
-                this.messageListRef.scrollTop = this.messageListRef.scrollHeight;
-    
-            }
-
-        });
-
-        socket.on('typingEnd', () => {
-
-            this.setState(prevState => {
-                return {
-                    ...prevState,
-                    anotherUser: {
-                        userName: '',
-                        isTypingMessage: false,
-                    }
-                }
-            });
-
-        })
-
-        socket.on('typingStart', (nameWhoIsTyping) => {
-            this.setState(prevState => {
-                return {
-                    ...prevState,
-                    anotherUser: {
-                        userName: nameWhoIsTyping,
-                        isTypingMessage: true,
-                    }
-                }
-            });
-
-        });
 
         if (this.props.messages.length > 0) {
                 this.messageListRef.scrollTop = this.messageListRef.scrollHeight;
         }
 
+    }
+
+    componentWillUnmount () {
+        socket.on('disconnected')
     }
 
     componentDidUpdate (prevProps, prevState) {
@@ -112,6 +125,8 @@ class Chat extends React.Component {
             this.messageListRef.scrollTop = this.messageListRef.scrollHeight;
 
         }
+
+        return null
     }
 
     sendMessage (e) {
@@ -150,57 +165,44 @@ class Chat extends React.Component {
         
         return (
             <div className="messanger">
-            
                 <div className="ui container">
                     <div className="ui two column centered grid">
+                        
                         <div className="column">
-                            <h2 style={{textAlign: 'center'}}>Chat</h2>
+                            <Headline
+                                typeHeadline='h2'
+                                className='center'
+                            >
+                                Chat
+                            </Headline>
 
-                            <div className="messageList-container">
-                                
-                                <MessageList
-                                    messageListRef={ el => this.messageListRef = el }
-                                    messages={ messages }
-                                    idCurrentUser={ user.id }
-                                />
+                            <Messanger
+                                messageListRef={ el => this.messageListRef = el }
+                                messages={ messages }
+                                idCurrentUser={ user.id }
+                                anotherUser={ anotherUser }
+                                userMessage={ userMessage }
 
+                                onChangeInput={ this.onChangeInput }
+                                sendMessage={ this.sendMessage }
+                            />
 
-                                <div className="messageList-container__typing">
-                                    {
-                                        anotherUser.isTypingMessage
-                                        ? <span>{ this.state.anotherUser.userName } is typing</span>
-                                        : null
-                                    }
-                                </div>
-
-
-                                <form className="messageControls form ui">
-                                    <div className="field messageControls__text">
-                                        <label>Text message:</label>
-                                        <textarea
-                                            className="messageControls__text-field messageControls__text-field--area"
-                                            type="text" 
-                                            name="userMessage" 
-                                            value={userMessage}
-                                            placeholder="Message"
-                                            onChange={this.onChangeInput}
-                                        ></textarea>
-                                    </div>
-
-                                    <button className="ui button primary messageControls__btn" type="sent" onClick={this.sendMessage} >Send</button>
-                                </form>
-                            </div>
                         </div>
 
                         <div className="column">
-                            <h2 style={{textAlign: 'center'}}>
-                                {countOnlineUsers} online { countOnlineUsers.length === 1 ? 'user' : 'users'}
-                            </h2>
+
+                            <Headline
+                                typeHeadline='h2'
+                                className='center'
+                            >
+                                { countOnlineUsers } online { countOnlineUsers.length === 1 ? 'user' : 'users' }
+                            </Headline>
                             
                             <OnlineUserList
                                 onlineUsers={ onlineUsers }
                                 idCurrentUser={ user.id }
                             />
+
                         </div>
                     </div>
                 </div>
