@@ -22,7 +22,7 @@ export class Profile extends Component {
     }
 
     render() {
-        const { userData } = this.props;
+        const { userData, loading, isError } = this.props;
 
         let avatarURL = settings.serverURI + userData.avatar;
         if ( userData.avatar === '' || (typeof userData.avatar === 'undefined') ) {
@@ -30,9 +30,7 @@ export class Profile extends Component {
 
         }
 
-        return (
-            <div className="ui container profile--wrap">
-                <h1 style={{textAlign: 'center', marginTop: '20px'}} >Your profile</h1>
+        let profileContent = (
                 <div className="profile">
                     <div className="ui four column centered grid">
                         <div className="column">
@@ -53,14 +51,38 @@ export class Profile extends Component {
                         <Link className="ui primary button profile__button" to="/editprofile">Edit your profile</Link>
                     </div>
                 </div>
-            </div>
+        )
+        
+        if (loading) {
+            profileContent = (
+                <div className="ui segment">
+                    <div className="ui active dimmer">
+                        <div className="ui text loader large">Loading</div>
+                    </div>
+                    <p></p>
+                </div>
+            )
+        }
 
+        if (isError) {
+            profileContent = (
+                <h2 style={{textAlign: 'center', color: 'red'}}>Something wrong</h2>
+            )
+        }
+
+        return (
+            <div className="ui container profile--wrap">
+                <h1 style={{textAlign: 'center', marginTop: '20px'}} >Your profile</h1>
+                { profileContent }
+            </div>
         )
     }
 }
 
 const mapStateToProps = (state) => ({
-    userData: state.profileReducer.userData
+    userData: state.profileReducer.userData,
+    loading: state.profileReducer.loading,
+    isError: state.profileReducer.isError
 });
 
 const mapDispatchToProps = (dispatch) => ({
