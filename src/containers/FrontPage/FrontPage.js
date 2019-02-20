@@ -4,8 +4,8 @@ export class FrontPage extends Component {
 
     render() {
             return (
-            <div>
-                <h1>Main page</h1>
+            <div className="ui container">
+                <h1>Hello it`s main page</h1>
             </div>
             )
         }
