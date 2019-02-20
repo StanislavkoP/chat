@@ -1,13 +1,22 @@
 import axios from '../../axiosDefault';
 import * as actionTypes from './actionTypes';
 
+const getDataCurrentProfileInit = (userData) => ({
+    type: actionTypes.GET_DATA_CURRENT_PROFILE_INIT,
+})
 
 const getDataCurrentProfileSuccess = (userData) => ({
     type: actionTypes.GET_DATA_CURRENT_PROFILE_SUCCESS,
     userData
+});
+
+const getDataCurrentProfileFailed = () => ({
+    type: actionTypes.GET_DATA_CURRENT_PROFILE_FAILED,
 })
 
 export const getDataCurrentProfile = dispatch => {
+    dispatch( getDataCurrentProfileInit() )
+
     axios({
         method: 'get',
         url: '/profile',
@@ -15,23 +24,32 @@ export const getDataCurrentProfile = dispatch => {
     })
     .then(response => {
         const userData = response.data.data;
-        console.log(userData);
+
         dispatch( getDataCurrentProfileSuccess(userData) )
 
     })
     .catch(err => {
         console.log(err);
+        dispatch( getDataCurrentProfileFailed() )
     })
 };
+
+const updateDataCurrentProfileInit = () => ({
+    type: actionTypes.UPDATE_DATA_CURRENT_PROFILE_INIT,
+});
 
 const updateDataCurrentProfileSuccess = newDataUser => ({
     type: actionTypes.UPDATE_DATA_CURRENT_PROFILE_SUCCESS,
     newDataUser
 });
 
+const updateDataCurrentProfileFailed = () => ({
+    type: actionTypes.UPDATE_DATA_CURRENT_PROFILE_FAILED,
+});
+
 export const updateDataCurrentProfile = newDataUser => dispatch => {
-    console.log(newDataUser);
-    debugger;
+    dispatch( updateDataCurrentProfileInit() )
+
     axios({
         method: 'put',
         url: '/profile',
@@ -43,11 +61,12 @@ export const updateDataCurrentProfile = newDataUser => dispatch => {
 
     })
     .then(response => {
-        console.log(response);
+
         dispatch( updateDataCurrentProfileSuccess(newDataUser) )
 
     })
     .catch(err => {
         console.log(err);
+        dispatch( updateDataCurrentProfileFailed() )
     })
 };
