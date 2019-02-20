@@ -7,6 +7,8 @@ import settings from '../../defaultSettigs';
 import * as actions from '../../state/action/index';
 
 import GroupInputField from '../../components/UI/GroupInputField';
+import Button from '../../components/UI/Button/Button';
+import Headline from '../../components/UI/Headline/Headline';
 
 import './EditProfile.css';
 
@@ -20,6 +22,7 @@ export class EditProfile extends Component {
                 userPassword: '',
                 userAvatar: ''
             },
+            isFormChanged: false,
         }
 
         this.onChangeInput = this.onChangeInput.bind(this);
@@ -86,7 +89,9 @@ export class EditProfile extends Component {
         newUserData.append('password', userPassword)
         newUserData.append('avatar', userAvatar)
 
-        this.props.updateDataCurrentProfile(newUserData)
+        this.props.updateDataCurrentProfile(newUserData);
+
+        this.setState({isFormChanged: false})
     }
 
     onChangeInput (e) {
@@ -95,7 +100,7 @@ export class EditProfile extends Component {
 
         if(inputName === 'userAvatar') {
             inputValue = e.target.files[0];
-            console.log(inputValue.name)
+
         }
 
         const updatedInput = {
@@ -103,57 +108,83 @@ export class EditProfile extends Component {
             [inputName]: inputValue,
         }
 
-        this.setState({controls: updatedInput})
+        this.setState({controls: updatedInput, isFormChanged: true});
     }
 
 
     render() {
-        const {controls} = this.state;
+        const { controls, isFormChanged } = this.state;
+        const { loading } = this.props;
         
         return (
             <div className="ui container">
-                <h1>Editing profile</h1>
 
-                <form className="ui form">
-                    <GroupInputField 
-                        type="text"
-                        value={ controls.userName }
-                        label="Name" 
-                        name="userName" 
-                        placeholder="Name"  
-                        onChangeInput={ this.onChangeInput }
-                    /> 
+                <Headline
+                    typeHeadline="h1"
+                    className="center white"
+                >
+                    Edit your profile
+                </Headline>
 
-                    <GroupInputField 
-                        type="password"
-                        value={ controls.userPassword }
-                        label="Password" 
-                        name="userPassword" 
-                        placeholder="Password"
-                        onChangeInput={ this.onChangeInput }
-                    />
+                <div className="edit-profile">
+                    <div className="ui three column centered grid">
 
-                    <GroupInputField 
-                        type="file"
-                        label="Your avatar" 
-                        name="userAvatar" 
-                        placeholder=""
-                        onChangeInput={ this.onChangeInput }
-                    />
+                        <div className="column">
+                            <div className="edit-profile__avatar">
+                                <img src={ controls.userAvatar } alt={ controls.userName } />
+                            </div>
+                        </div>
 
-                    <div className="edit-profile__avatar">
-                        <img src={ controls.userAvatar } alt={ controls.userName } />
+                        <div className="column">
+                            <form className="ui form">
+
+                                <GroupInputField 
+                                    type="text"
+                                    value={ controls.userName }
+                                    label="Name" 
+                                    name="userName" 
+                                    placeholder="Name"  
+                                    onChangeInput={ this.onChangeInput }
+                                /> 
+
+                                <GroupInputField 
+                                    type="password"
+                                    value={ controls.userPassword }
+                                    label="Password" 
+                                    name="userPassword" 
+                                    placeholder="Password"
+                                    onChangeInput={ this.onChangeInput }
+                                />
+
+                                <GroupInputField 
+                                    type="file"
+                                    label="Your avatar" 
+                                    name="userAvatar" 
+                                    placeholder=""
+                                    onChangeInput={ this.onChangeInput }
+                                />
+                                
+                                <Button
+                                    className={ `green profile__button ${ loading ? 'loading' : '' }` }
+                                    type="submit"
+                                    clicked={ this.onSubmitForm }
+                                    disabled={ !isFormChanged }
+                                >
+                                    Update
+                                </Button>
+                            </form>
+                        </div>
+
                     </div>
-
-                    <button className="ui button green profile__button" type="submit" onClick={this.onSubmitForm}>Update</button>
-                </form>
+                </div>
             </div>
         )
     }
 }
 
 const mapStateToProps = (state) => ({
-    userData: state.profileReducer.userData
+    userData: state.profileReducer.userData,
+    loading: state.profileReducer.loading,
 })
 
 const mapDispatchToProps = (dispatch) => ({

@@ -2,10 +2,23 @@
     margin-top: 20px;
 }
 
+.edit-profile {
+    color: white;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 18px;
+    background-color: rgba(0,0,0,.5);
+}
+
+.edit-profile .ui.form .field > label {
+    color: white;
+}
+
 .edit-profile__avatar {
-    max-width: 150px;
+    max-width: 200px;
+    margin-right: 16px;
 }
 
 .edit-profile__avatar img{
-    max-width: 150px;
+    max-width: 100%;
 }
