@@ -44,7 +44,7 @@ const store = configurateStore({});
 
 if (localStorage.jwtToken) {
     const decodedJwtToken = jwt_decode(localStorage.jwtToken);
-
+    
     const currentTime = Date.now() / 1000;
 
     if (decodedJwtToken.exp < currentTime) {
