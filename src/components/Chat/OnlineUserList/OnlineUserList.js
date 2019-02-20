@@ -20,7 +20,7 @@ function OnlineUserList (props) {
             <div className="ui feed users__list">
                 {
                     onlineUsers.map(user => {
-                        if (user.id === idCurrentUser) return
+                        if (user.id === idCurrentUser) return null
 
                         return (
                             <OnlineUserItem
