@@ -16,9 +16,23 @@
 
 .edit-profile__avatar {
     max-width: 200px;
-    margin-right: 16px;
+    margin: 0 auto;
 }
 
 .edit-profile__avatar img{
     max-width: 100%;
+}
+
+.edit-profile__showCrop {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.ui.modal.edit-profile__showCrop > .image.content {
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ui.modal.edit-profile__showCrop .cropper-bg {
+    width: 100% !important;
 }

@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
+import Croper from 'cropperjs';
 
 import settings from '../../defaultSettigs';
+import { dataURItoBlob } from '../../utils';
 
 import * as actions from '../../state/action/index';
 
@@ -12,6 +14,7 @@ import Headline from '../../components/UI/Headline/Headline';
 
 import './EditProfile.css';
 
+
 export class EditProfile extends Component {
     constructor(props) {
         super(props)
@@ -20,13 +23,19 @@ export class EditProfile extends Component {
             controls : {
                 userName: '',
                 userPassword: '',
-                userAvatar: ''
             },
+            avatar: '',
+            isShowedCropPopup: false,
             isFormChanged: false,
         }
 
+        this.fileInput = React.createRef();
+        this.refAvatar = React.createRef();
+
         this.onChangeInput = this.onChangeInput.bind(this);
         this.onSubmitForm = this.onSubmitForm.bind(this);
+        this.onCutAvatar = this.onCutAvatar.bind(this);
+        this.onCancelEditAvatar = this.onCancelEditAvatar.bind(this);
     }
 
     static propTypes = {
@@ -42,6 +51,7 @@ export class EditProfile extends Component {
 
         if( propUserDataHasFields ) {
 
+            let avatar = state.avatar;
             const userData = {}
 
             if ( state.controls.userName === '' ) {
@@ -49,9 +59,9 @@ export class EditProfile extends Component {
 
             }
 
-            if ( state.controls.userAvatar === '' ) {
+            if ( state.avatar === '' ) {
                 const imgPath = settings.serverURI + props.userData.avatar;
-                userData.userAvatar = imgPath;
+                avatar = imgPath;
             
             }
 
@@ -60,7 +70,8 @@ export class EditProfile extends Component {
                 controls: {
                     ...state.controls,
                     ...userData
-                }
+                },
+                avatar: avatar
             }
         }
 
@@ -79,10 +90,12 @@ export class EditProfile extends Component {
         
         const { 
             userName,
-            userAvatar,
             userPassword
         
         } = this.state.controls;
+        
+        let croppedImageBase64 = this._crop.getCroppedCanvas().toDataURL('image/jpeg');
+        const userAvatar = dataURItoBlob(croppedImageBase64);
 
         const newUserData = new FormData()
         newUserData.append('name', userName);
@@ -90,6 +103,9 @@ export class EditProfile extends Component {
         newUserData.append('avatar', userAvatar)
 
         this.props.updateDataCurrentProfile(newUserData);
+
+        this.fileInput.value = '';
+        this._crop.destroy();
 
         this.setState({isFormChanged: false})
     }
@@ -101,6 +117,21 @@ export class EditProfile extends Component {
         if(inputName === 'userAvatar') {
             inputValue = e.target.files[0];
 
+            let reader = new FileReader();
+            reader.readAsDataURL(inputValue);
+            reader.onload = (e) => {
+
+                this.refAvatar.current.setAttribute('src', e.target.result);
+
+                this._crop = new Croper(this.refAvatar.current, {
+                    zoomable: false,
+                    aspectRatio: 16/9
+                });
+                this.setState({isShowedCropPopup : true})
+            }
+
+        return;
+
         }
 
         const updatedInput = {
@@ -111,12 +142,30 @@ export class EditProfile extends Component {
         this.setState({controls: updatedInput, isFormChanged: true});
     }
 
+    onCancelEditAvatar () {
+        this.refAvatar.current.setAttribute('src', settings.serverURI + this.props.userData.avatar);
+        this.fileInput.value = '';
+        this._crop.destroy();
+        this.setState({isShowedCropPopup: false});
+
+    }
+
+    onCutAvatar () {
+        this._crop.crop();
+        let croppedImage = this._crop.getCroppedCanvas().toDataURL("image/png");
+        
+        this.fileInput.value = '';
+        this.setState({avatar: croppedImage, isShowedCropPopup: false, isFormChanged: true})
+
+    }
+
 
     render() {
-        const { controls, isFormChanged } = this.state;
+        const { controls, isShowedCropPopup, isFormChanged } = this.state;
         const { loading } = this.props;
         
         return (
+            <React.Fragment>
             <div className="ui container">
 
                 <Headline
@@ -131,8 +180,9 @@ export class EditProfile extends Component {
 
                         <div className="column">
                             <div className="edit-profile__avatar">
-                                <img src={ controls.userAvatar } alt={ controls.userName } />
+                                <img  src={ this.state.avatar } alt={ controls.userName } />
                             </div>
+                            
                         </div>
 
                         <div className="column">
@@ -157,10 +207,12 @@ export class EditProfile extends Component {
                                 />
 
                                 <GroupInputField 
+                                    refInput={ ref => this.fileInput = ref }
                                     type="file"
                                     label="Your avatar" 
-                                    name="userAvatar" 
-                                    placeholder=""
+                                    name="userAvatar"
+                                    
+                                    placeholder="Avatar"
                                     onChangeInput={ this.onChangeInput }
                                 />
                                 
@@ -177,7 +229,32 @@ export class EditProfile extends Component {
 
                     </div>
                 </div>
+
+                <div className={`ui modal edit-profile__showCrop ${ isShowedCropPopup ? "active" : ''}`}>
+                    <div className="image content">
+                        <img className="image" ref={this.refAvatar} src="" alt={ controls.userName }/>
+                        <div className="description">
+                            <Button
+                                className={ `green profile__button ${ loading ? 'loading' : '' }` }
+                                type="submit"
+                                clicked={ this.onCutAvatar }
+                            >
+                                Cut
+                            </Button>
+
+                            <Button
+                                className={ `negative profile__button ${ loading ? 'loading' : '' }` }
+                                type="submit"
+                                clicked={ this.onCancelEditAvatar }
+                            >
+                                Cancel
+                            </Button>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <div className={`ui dimmer modals page ${ isShowedCropPopup ? "active" : ''}`}></div>
+    </React.Fragment>
         )
     }
 }
