@@ -25,7 +25,9 @@ function GroupInputField (props) {
         error,
         nameErrorField,
         inputWithError,
-        onChangeInput, userIsTyping
+        onChangeInput,
+        userIsTyping,
+        refInput
     
     } = props
     
@@ -44,6 +46,7 @@ function GroupInputField (props) {
         <div className={`field ${classError}`}>
             <label>{ label }</label>
             <input
+                ref={ refInput }
                 type={ type } 
                 name={ name }
                 value={ value } 
